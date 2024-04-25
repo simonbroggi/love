@@ -186,6 +186,35 @@ int w_TextBatch_getDimensions(lua_State *L)
 	return 2;
 }
 
+int w_TextBatch_setDrawRange(lua_State *L)
+{
+	TextBatch *t = luax_checktextbatch(L, 1);
+
+	if (lua_isnoneornil(L, 2))
+		t->setDrawRange();
+	else
+	{
+		int start = (int) luaL_checkinteger(L, 2) - 1;
+		int count = (int) luaL_checkinteger(L, 3);
+		luax_catchexcept(L, [&](){ t->setDrawRange(start, count); });
+	}
+
+	return 0;
+}
+
+int w_TextBatch_getDrawRange(lua_State *L)
+{
+	TextBatch *t = luax_checktextbatch(L, 1);
+
+	int start = 0;
+	int count = 1;
+	if (!t->getDrawRange(start, count))
+		return 0;
+
+	lua_pushnumber(L, start + 1);
+	lua_pushnumber(L, count);
+	return 2;
+}
 static const luaL_Reg w_TextBatch_functions[] =
 {
 	{ "set", w_TextBatch_set },
@@ -198,6 +227,8 @@ static const luaL_Reg w_TextBatch_functions[] =
 	{ "getWidth", w_TextBatch_getWidth },
 	{ "getHeight", w_TextBatch_getHeight },
 	{ "getDimensions", w_TextBatch_getDimensions },
+	{ "setDrawRange", w_TextBatch_setDrawRange },
+	{ "getDrawRange", w_TextBatch_getDrawRange },
 	{ 0, 0 }
 };
 

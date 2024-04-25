@@ -64,6 +64,10 @@ public:
 	 **/
 	int getHeight(int index = 0) const;
 
+	void setDrawRange(int start, int count);
+	void setDrawRange();
+	bool getDrawRange(int &start, int &count) const;
+
 	// Implements Drawable.
 	void draw(love::graphics::Graphics *gfx, const Matrix4 &m) override;
 
@@ -99,10 +103,13 @@ private:
 
 	size_t vertOffset;
 	
+	int range_start;
+	int range_count;
+	
 	// Used so we know when the font's texture cache is invalidated.
 	uint32 textureCacheID;
 	
-}; // Text
+}; // TextBatch
 
 } // graphics
 } // love

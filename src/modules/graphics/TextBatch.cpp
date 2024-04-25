@@ -248,6 +248,31 @@ int TextBatch::getHeight(int index) const
 	return textData[index].textInfo.height;
 }
 
+
+void TextBatch::setDrawRange(int start, int count)
+{
+	if (start < 0 || count <= 0)
+		throw love::Exception("Invalid draw range.");
+
+	range_start = start;
+	range_count = count;
+}
+
+void TextBatch::setDrawRange()
+{
+	range_start = range_count = -1;
+}
+
+bool TextBatch::getDrawRange(int &start, int &count) const
+{
+	if (range_start < 0 || range_count <= 0)
+		return false;
+
+	start = range_start;
+	count = range_count;
+	return true;
+}
+
 void TextBatch::draw(Graphics *gfx, const Matrix4 &m)
 {
 	if (vertexBuffer == nullptr || vertexData == nullptr || drawCommands.empty())
@@ -292,7 +317,11 @@ void TextBatch::draw(Graphics *gfx, const Matrix4 &m)
 	for (const Font::DrawCommand &cmd : drawCommands)
 	{
 		Texture *tex = gfx->getTextureOrDefaultForActiveShader(cmd.texture);
-		gfx->drawQuads(cmd.startvertex / 4, cmd.vertexcount / 4, vertexAttributes, vertexBuffers, tex);
+		int start = cmd.startvertex / 4;
+		int count = cmd.vertexcount / 4;
+		start = std::min(std::max(start, range_start), start + count - 1);
+		count = std::min(count, range_count-(cmd.startvertex / 4));
+		gfx->drawQuads(start, count, vertexAttributes, vertexBuffers, tex);
 	}
 }
 

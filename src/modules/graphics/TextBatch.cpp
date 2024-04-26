@@ -37,6 +37,8 @@ TextBatch::TextBatch(Font *font, const std::vector<love::font::ColoredString> &t
 	, modifiedVertices()
 	, vertOffset(0)
 	, textureCacheID((uint32) -1)
+	, range_start(-1)
+	, range_count(-1)
 {
 	set(text);
 }
@@ -248,6 +250,10 @@ int TextBatch::getHeight(int index) const
 	return textData[index].textInfo.height;
 }
 
+int TextBatch::getQuadCount() const
+{
+	return vertOffset / 4;
+}
 
 void TextBatch::setDrawRange(int start, int count)
 {
@@ -314,14 +320,23 @@ void TextBatch::draw(Graphics *gfx, const Matrix4 &m)
 
 	Graphics::TempTransform transform(gfx, m);
 
+	int totalQuads = vertOffset / 4;
+	int start = std::min(std::max(0, range_start), totalQuads - 1);
+
+	int count = totalQuads;
+	if (range_count > 0)
+		count = std::min(count, range_count);
+
+	count = std::min(count, totalQuads - start);
+
 	for (const Font::DrawCommand &cmd : drawCommands)
 	{
 		Texture *tex = gfx->getTextureOrDefaultForActiveShader(cmd.texture);
-		int start = cmd.startvertex / 4;
-		int count = cmd.vertexcount / 4;
-		start = std::min(std::max(start, range_start), start + count - 1);
-		count = std::min(count, range_count-(cmd.startvertex / 4));
-		gfx->drawQuads(start, count, vertexAttributes, vertexBuffers, tex);
+		int cmdStart = cmd.startvertex / 4;
+		int cmdCount = cmd.vertexcount / 4;
+		cmdStart = std::max(start, cmdStart);
+		cmdCount = std::min(count, cmdCount);
+		gfx->drawQuads(cmdStart, cmdCount, vertexAttributes, vertexBuffers, tex);
 	}
 }
 

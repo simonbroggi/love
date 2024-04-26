@@ -64,6 +64,12 @@ public:
 	 **/
 	int getHeight(int index = 0) const;
 
+	/**
+	 * Get the number of quads currently in this TextBatch.
+	 * Every quad represents a glyph.
+	 */
+	int getQuadCount() const;
+	
 	void setDrawRange(int start, int count);
 	void setDrawRange();
 	bool getDrawRange(int &start, int &count) const;

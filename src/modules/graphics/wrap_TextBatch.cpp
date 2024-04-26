@@ -186,6 +186,13 @@ int w_TextBatch_getDimensions(lua_State *L)
 	return 2;
 }
 
+int w_TextBatch_getQuadCount(lua_State *L)
+{
+	TextBatch *t = luax_checktextbatch(L, 1);
+	lua_pushinteger(L, t->getQuadCount());
+	return 1;
+}
+
 int w_TextBatch_setDrawRange(lua_State *L)
 {
 	TextBatch *t = luax_checktextbatch(L, 1);
@@ -227,6 +234,7 @@ static const luaL_Reg w_TextBatch_functions[] =
 	{ "getWidth", w_TextBatch_getWidth },
 	{ "getHeight", w_TextBatch_getHeight },
 	{ "getDimensions", w_TextBatch_getDimensions },
+	{ "getQuadCount", w_TextBatch_getQuadCount },
 	{ "setDrawRange", w_TextBatch_setDrawRange },
 	{ "getDrawRange", w_TextBatch_getDrawRange },
 	{ 0, 0 }

@@ -995,8 +995,12 @@ void ParticleSystem::update(float dt)
 			k = quads.size();
 			if (k > 0)
 			{
-				s = t * (float) k; // [0:numquads-1] (clamped below)
-				i = (s > 0.0f) ? (size_t) s : 0;
+				// s = t * (float) k; // [0:numquads-1] (clamped below)
+				// i = (s > 0.0f) ? (size_t) s : 0;
+				
+				s = p->life * 20.0f;
+				i = s;
+				i = i % k;
 				p->quadIndex = (int) ((i < k) ? i : k - 1);
 			}
 

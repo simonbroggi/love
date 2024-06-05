@@ -389,7 +389,11 @@ void ParticleSystem::initParticle(Particle *p, float t)
 
 	p->color = colors[0];
 
-	p->quadIndex = 0;
+	// p->quadIndex = 0;
+
+	// random initial quad index
+	p->initialQuadIndex = static_cast<int>(rng.random(0, quads.size()));
+	p->quadIndex = p->initialQuadIndex;
 }
 
 void ParticleSystem::insertTop(Particle *p)
@@ -997,11 +1001,10 @@ void ParticleSystem::update(float dt)
 			{
 				// s = t * (float) k; // [0:numquads-1] (clamped below)
 				// i = (s > 0.0f) ? (size_t) s : 0;
+				// p->quadIndex = (int)((i < k) ? i : k - 1);
 				
-				s = p->life * 20.0f;
-				i = s;
-				i = i % k;
-				p->quadIndex = (int) ((i < k) ? i : k - 1);
+				i = static_cast<size_t>(p->life * 18.0f);
+				p->quadIndex = (p->initialQuadIndex + i) % k;
 			}
 
 			// Next particle.

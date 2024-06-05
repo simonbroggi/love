@@ -556,6 +556,7 @@ private:
 		Colorf color;
 
 		int quadIndex;
+		int initialQuadIndex;
 	};
 
 	void resetOffset();

@@ -617,6 +617,21 @@ int w_ParticleSystem_getQuads(lua_State *L)
 	return 1;
 }
 
+int w_ParticleSystem_setTimePerQuad(lua_State* L)
+{
+	ParticleSystem* t = luax_checkparticlesystem(L, 1);
+	float arg1 = (float)luaL_checknumber(L, 2);
+	t->setTimePerQuad(arg1);
+	return 0;
+}
+
+int w_ParticleSystem_getTimePerQuad(lua_State* L)
+{
+	ParticleSystem* t = luax_checkparticlesystem(L, 1);
+	lua_pushnumber(L, t->getTimePerQuad());
+	return 1;
+}
+
 int w_ParticleSystem_setRelativeRotation(lua_State *L)
 {
 	ParticleSystem *t = luax_checkparticlesystem(L, 1);
@@ -751,6 +766,8 @@ static const luaL_Reg w_ParticleSystem_functions[] =
 	{ "getColors", w_ParticleSystem_getColors },
 	{ "setQuads", w_ParticleSystem_setQuads },
 	{ "getQuads", w_ParticleSystem_getQuads },
+	{ "setTimePerQuad", w_ParticleSystem_setTimePerQuad },
+	{ "getTimePerQuad", w_ParticleSystem_getTimePerQuad },
 	{ "setOffset", w_ParticleSystem_setOffset },
 	{ "getOffset", w_ParticleSystem_getOffset },
 	{ "setRelativeRotation", w_ParticleSystem_setRelativeRotation },

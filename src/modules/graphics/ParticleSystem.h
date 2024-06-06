@@ -436,6 +436,7 @@ public:
 
 	/**
 	 * Sets a list of Quads to use for particles over their lifetime.
+	 * If timePerQuad is set, this is used instead of the total lifetime/quads.size().
 	 **/
 	void setQuads(const std::vector<Quad *> &newQuads);
 	void setQuads();
@@ -444,6 +445,17 @@ public:
 	 * Gets the Quads used when drawing the particles.
 	 **/
 	std::vector<Quad *> getQuads() const;
+
+	/**
+	 * Sets the time a quad is used before it switches to the next quad.
+	 * If set to zero or less, all the quads will be shown over the lifetime of the particle.
+	 **/
+	void setTimePerQuad(float time);
+
+	/**
+	 * Returns the amount of time a quad is used.
+	 */
+	float getTimePerQuad() const;
 
 	/**
 	 * sets whether particle angles & rotations are relative to their velocities.
@@ -556,7 +568,7 @@ private:
 		Colorf color;
 
 		int quadIndex;
-		int initialQuadIndex;
+		float quadOffset;
 	};
 
 	void resetOffset();
@@ -671,6 +683,7 @@ private:
 
 	// Quads.
 	std::vector<StrongRef<Quad>> quads;
+	float timePerQuad;
 
 	bool relativeRotation;
 

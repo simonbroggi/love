@@ -92,6 +92,7 @@ ParticleSystem::ParticleSystem(Texture *texture, uint32 size)
 	, spinVariation(0)
 	, offset(float(texture->getWidth())*0.5f, float(texture->getHeight())*0.5f)
 	, defaultOffset(true)
+	, timePerQuad(0.0f)
 	, relativeRotation(false)
 	, vertexAttributes(CommonFormat::XYf_STf_RGBAub, 0)
 	, buffer(nullptr)
@@ -153,6 +154,7 @@ ParticleSystem::ParticleSystem(const ParticleSystem &p)
 	, defaultOffset(p.defaultOffset)
 	, colors(p.colors)
 	, quads(p.quads)
+	, timePerQuad(p.timePerQuad)
 	, relativeRotation(p.relativeRotation)
 	, vertexAttributes(p.vertexAttributes)
 	, buffer(nullptr)
@@ -389,11 +391,17 @@ void ParticleSystem::initParticle(Particle *p, float t)
 
 	p->color = colors[0];
 
-	// p->quadIndex = 0;
-
-	// random initial quad index
-	p->initialQuadIndex = static_cast<int>(rng.random(0, quads.size()));
-	p->quadIndex = p->initialQuadIndex;
+	if (timePerQuad <= 0)
+	{
+		p->quadIndex = 0;
+		p->quadOffset = 0.0f;
+	}
+	else
+	{
+		// random initial quad index
+		p->quadOffset = (float)rng.random(quads.size() * timePerQuad);
+		p->quadIndex = ((size_t)(p->quadOffset / timePerQuad)) % quads.size();
+	}
 }
 
 void ParticleSystem::insertTop(Particle *p)
@@ -832,6 +840,16 @@ std::vector<Quad *> ParticleSystem::getQuads() const
 	return quadlist;
 }
 
+void ParticleSystem::setTimePerQuad(float time)
+{
+	timePerQuad = time;
+}
+
+float ParticleSystem::getTimePerQuad() const
+{
+	return timePerQuad;
+}
+
 void ParticleSystem::setRelativeRotation(bool enable)
 {
 	relativeRotation = enable;
@@ -999,12 +1017,18 @@ void ParticleSystem::update(float dt)
 			k = quads.size();
 			if (k > 0)
 			{
-				// s = t * (float) k; // [0:numquads-1] (clamped below)
-				// i = (s > 0.0f) ? (size_t) s : 0;
-				// p->quadIndex = (int)((i < k) ? i : k - 1);
-				
-				i = static_cast<size_t>(p->life * 18.0f);
-				p->quadIndex = (p->initialQuadIndex + i) % k;
+
+				if (timePerQuad > 0.0f)
+				{
+					i = (size_t)((p->life + p->quadOffset) / timePerQuad);
+					p->quadIndex = i % k;
+				}
+				else
+				{
+					s = t * (float) k; // [0:numquads-1] (clamped below)
+					i = (s > 0.0f) ? (size_t) s : 0;
+					p->quadIndex = (int)((i < k) ? i : k - 1);
+				}
 			}
 
 			// Next particle.

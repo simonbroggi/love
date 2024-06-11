@@ -395,7 +395,7 @@ int HarfbuzzShaper::computeWordWrapIndex(const ColoredCodepoints &codepoints, Ra
 					// Rewind to after the last seen space when wrapping.
 					if (firstindexafterspace != -1)
 					{
-						wrapindex = firstindexafterspace;
+						wrapindex = firstindexafterspace+1;
 						outwidth = widthbeforelastspace;
 					}
 
